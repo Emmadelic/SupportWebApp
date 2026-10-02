@@ -6,6 +6,14 @@
 
 <PageTitle>Supporthenvendelser</PageTitle>
 
+<label for="categoryFilter">Filtrér efter kategori:</label>
+<select id="categoryFilter" value="@selectedCategory" @onchange="OnCategoryChanged">
+    <option value="Alle">Alle</option>
+    <option value="Teknisk problem">Teknisk problem</option>
+    <option value="Faktura">Faktura</option>
+    <option value="Andet">Andet</option>
+</select>
+
 <h1>Supporthenvendelser</h1>
 
 @if (messages is null)
@@ -47,6 +55,17 @@ else
 
 @code {
     private List<SupportMessage>? messages;
+
+    private string selectedCategory = "Alle";
+
+    private async Task OnCategoryChanged(ChangeEventArgs e)
+    {
+        selectedCategory = e.Value?.ToString() ?? "Alle";
+
+        messages = selectedCategory == "Alle"
+            ? await CosmosDbService.GetAllAsync()
+            : await CosmosDbService.GetSupportMsgByCategoryAsync(selectedCategory);
+    }
 
     protected override async Task OnInitializedAsync()
     {

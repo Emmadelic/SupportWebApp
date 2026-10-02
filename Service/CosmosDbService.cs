@@ -62,4 +62,27 @@ public class CosmosDbService
 
         return messages;
     }
+
+    public async Task<List<SupportMessage>> GetSupportMsgByCategoryAsync(string category)
+    {
+        var queryDef = new QueryDefinition(
+            "SELECT * FROM c WHERE c.category = @category ORDER BY c.createdAt DESC")
+            .WithParameter("@category", category);
+
+        var query = _container.GetItemQueryIterator<SupportMessage>(
+            queryDef,
+            requestOptions: new QueryRequestOptions
+            {
+                PartitionKey = new PartitionKey(category)
+            });
+
+        var results = new List<SupportMessage>();
+
+        while (query.HasMoreResults)
+        {
+            results.AddRange(await query.ReadNextAsync());
+        }
+
+        return results;
+    }
 }
