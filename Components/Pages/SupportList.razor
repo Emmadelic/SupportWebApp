@@ -15,6 +15,10 @@
 </select>
 
 <h1>Supporthenvendelser</h1>
+@if (messages is not null)
+{
+    <p>Antal henvendelser: @messages.Count</p>
+}
 
 @if (messages is null)
 {
